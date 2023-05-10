@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+// const mongodbErrorHandler = require('mongoose-mongodb-errors');
 
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
@@ -14,6 +15,8 @@ mongoose.connect('mongodb+srv://Pimousse:h69Vw9eWRXK2ako1@openclassroomcours.qfh
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use(express.json());
+
+// mongoose.plugin(mongodbErrorHandler);
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
