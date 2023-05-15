@@ -111,44 +111,50 @@ exports.getAllSauces = (req, res, next) => {
               switch (like) {
                 case 1:
                   if (!userIdInUsersLiked && !userIdInUsersDisliked) {
-                    // const likesNumber = usersLiked.push(userId);
+                    sauce.likes = usersLiked.push(sauceObject.userId);
                     console.log("Like ajouté !")
                     // res.status(200).json({message: "Nouveau like ajouté !"});
                   } else {
                     console.log("Erreur serveur")
-                    res.status(500).json({ message: "Erreur serveur" });
+                    // res.status(500).json({ message: "Erreur serveur" });
                   }
                 break;
                 case 0:
                   if (userIdInUsersLiked && !userIdInUsersDisliked) {
+                    console.log(sauceObject.userId);
+                    console.log(usersLiked);
+                    var indiceLike = usersLiked.indexof(sauceObject.userId);
+                    console.log(indiceLike);
+                    usersLiked.splice(indiceLike,1);
                     console.log("Like supprimé !")
-                    res.status(200).json({message: "Like retiré !"});
+                    // res.status(200).json({message: "Like retiré !"});
                   } else if (!userIdInUsersLiked && userIdInUsersDisliked) {
                     console.log("Dislike supprimé !")
-                    res.status(200).json({message: "Dislike retiré !"});
+                    // res.status(200).json({message: "Dislike retiré !"});
                   } else {
                     console.log("Erreur serveur")
-                    res.status(500).json({ message: "Erreur serveur" });
+                    // res.status(500).json({ message: "Erreur serveur" });
                   }
                 break;
                 case -1:
                   if (!userIdInUsersLiked && !userIdInUsersDisliked) {
-                    sauce.dislikes = usersDisliked.push(userId);
+                    sauce.dislikes = usersDisliked.push(sauceObject.userId);
                     console.log("Dislike ajouté !")
-                    res.status(200).json({message: "Nouveau Dislike ajouté !"});
+                    // res.status(200).json({message: "Nouveau Dislike ajouté !"});
                   } else {
                     console.log("Erreur serveur")
-                    res.status(500).json({ message: "Erreur serveur" });
+                    // res.status(500).json({ message: "Erreur serveur" });
                   }
                 break;
               }
               console.log(sauce);
-              Sauce.updateOne({ _id: req.params.id}, { manufacturer:"Sagouin", _id: req.params.id})
+              Sauce.updateOne(
+                { _id: req.params.id}, 
+                { likes: sauce.likes, dislikes: sauce.dislikes, usersLiked: usersLiked, usersDisliked: usersDisliked, _id: req.params.id})
               .then(() => res.status(200).json({message : 'Sauce likée!'}))
               .catch(error => res.status(401).json({ error }));
               // console.log(sauceObject);
               // console.log(req.params);
-              
             })
             .catch( error => {
               res.status(500).json({ error });
