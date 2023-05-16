@@ -103,58 +103,49 @@ exports.getAllSauces = (req, res, next) => {
           } else { 
             Sauce.findOne({ _id: req.params.id})
             .then( sauce => {
-            var usersLiked = sauce.usersLiked;
-            var usersDisliked = sauce.usersDisliked;
-            const userIdInUsersLiked = usersLiked.includes(sauceObject.userId);
-            const userIdInUsersDisliked = usersDisliked.includes(sauceObject.userId);
+            var usersLikedTab = sauce.usersLiked;
+            var usersDislikedTab = sauce.usersDisliked;
+            const userIdInUsersLiked = usersLikedTab.includes(sauceObject.userId);
+            const userIdInUsersDisliked = usersDislikedTab.includes(sauceObject.userId);
               const like = sauceObject.like;
               switch (like) {
                 case 1:
                   if (!userIdInUsersLiked && !userIdInUsersDisliked) {
-                    sauce.likes = usersLiked.push(sauceObject.userId);
+                    sauce.likes = usersLikedTab.push(sauceObject.userId);
                     console.log("Like ajouté !")
-                    // res.status(200).json({message: "Nouveau like ajouté !"});
                   } else {
                     console.log("Erreur serveur")
-                    // res.status(500).json({ message: "Erreur serveur" });
                   }
                 break;
                 case 0:
                   if (userIdInUsersLiked && !userIdInUsersDisliked) {
-                    console.log(sauceObject.userId);
-                    console.log(usersLiked);
-                    var indiceLike = usersLiked.indexof(sauceObject.userId);
-                    console.log(indiceLike);
-                    usersLiked.splice(indiceLike,1);
+                    var indiceLike = usersLikedTab.indexOf(sauceObject.userId);
+                    usersLikedTab.splice(indiceLike,1);
+                    sauce.likes -= 1;
                     console.log("Like supprimé !")
-                    // res.status(200).json({message: "Like retiré !"});
                   } else if (!userIdInUsersLiked && userIdInUsersDisliked) {
+                    var indiceDislike = usersDislikedTab.indexOf(sauceObject.userId);
+                    usersDislikedTab.splice(indiceDislike,1);
+                    sauce.dislikes -= 1;
                     console.log("Dislike supprimé !")
-                    // res.status(200).json({message: "Dislike retiré !"});
                   } else {
                     console.log("Erreur serveur")
-                    // res.status(500).json({ message: "Erreur serveur" });
                   }
                 break;
                 case -1:
                   if (!userIdInUsersLiked && !userIdInUsersDisliked) {
-                    sauce.dislikes = usersDisliked.push(sauceObject.userId);
+                    sauce.dislikes = usersDislikedTab.push(sauceObject.userId);
                     console.log("Dislike ajouté !")
-                    // res.status(200).json({message: "Nouveau Dislike ajouté !"});
                   } else {
                     console.log("Erreur serveur")
-                    // res.status(500).json({ message: "Erreur serveur" });
                   }
                 break;
               }
-              console.log(sauce);
               Sauce.updateOne(
                 { _id: req.params.id}, 
-                { likes: sauce.likes, dislikes: sauce.dislikes, usersLiked: usersLiked, usersDisliked: usersDisliked, _id: req.params.id})
+                { likes: sauce.likes, dislikes: sauce.dislikes, usersLiked: usersLikedTab, usersDisliked: usersDislikedTab, _id: req.params.id})
               .then(() => res.status(200).json({message : 'Sauce likée!'}))
               .catch(error => res.status(401).json({ error }));
-              // console.log(sauceObject);
-              // console.log(req.params);
             })
             .catch( error => {
               res.status(500).json({ error });

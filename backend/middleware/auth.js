@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
- 
+const tokenEncryptionKey = require('../.accessData'); 
+
+console.log("test", tokenEncryptionKey);
 module.exports = (req, res, next) => {
    try {
        const token = req.headers.authorization.split(' ')[1];
-       const decodedToken = jwt.verify(token, 'c2Gf9If!9!3s$3YgkB7^F5t5');
+       const decodedToken = jwt.verify(token, tokenEncryptionKey);
        const userId = decodedToken.userId;
        req.auth = {
            userId: userId

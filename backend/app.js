@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const mongoConnectionString = require('./.accessData');
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -15,7 +16,7 @@ const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 const path = require('path');
 
-mongoose.connect('mongodb+srv://Pimousse:h69Vw9eWRXK2ako1@openclassroomcours.qfht2qp.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(mongoConnectionString,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
