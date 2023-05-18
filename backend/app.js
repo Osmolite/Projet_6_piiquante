@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const mongoConnectionString = require('./.accessData');
+require('dotenv').config();
+console.log(process.env);
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -16,7 +17,7 @@ const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 const path = require('path');
 
-mongoose.connect(mongoConnectionString,
+mongoose.connect(process.env.MONGO_CONNECTION,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
