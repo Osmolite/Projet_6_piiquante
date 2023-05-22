@@ -1,21 +1,30 @@
+/**
+ * Importation d'express, express-rate-limit, mongoose, dotenv,
+ * des fichiers routes sauce et user, ainsi que de path
+ */
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config();
-
 const rateLimit = require('express-rate-limit');
-const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-})
-
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 const path = require('path');
 
+/**
+ * Utilisation d'express-rate-limit permettant de limiter le nombre de requêtes par fenêtre par 15 minutes
+ */
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, 
+	max: 1000, 
+	standardHeaders: true, 
+	legacyHeaders: false, 
+})
+app.use(limiter);
+
+/**
+ * Connection à MongoDB via mongoose en utilisant le fichier .env
+ */
 mongoose.connect(process.env.MONGO_CONNECTION,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
@@ -24,8 +33,9 @@ mongoose.connect(process.env.MONGO_CONNECTION,
 
 app.use(express.json());
 
-app.use(limiter);
-
+/**
+ * Ouverture des autorisations pour le système de sécurité CORS
+ */
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -33,9 +43,15 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(bodyParser.json());
+/**
+ * Appel et utilisation des fichiers routes,
+ * L'image est renvoyée en tant que fichier static
+ */
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+/**
+ * Exportation du module app
+ */
 module.exports = app;

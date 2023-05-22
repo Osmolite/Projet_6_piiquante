@@ -1,6 +1,14 @@
+/**
+* Importation de http et du fichier app
+*/
 const http = require('http');
 const app = require('./app');
 
+/**
+* Transforme Port en entier positif si possible
+* @param { String } val - Port venant de l'environnement sinon '3000'
+* @return { String | Number | Boolean } port - Renvoie port normalisé 
+*/
 const normalizePort = val => {
   const port = parseInt(val, 10);
 
@@ -12,9 +20,17 @@ const normalizePort = val => {
   }
   return false;
 };
+
+/**
+* Normalise le port et l'attribut à express
+*/
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+/**
+* Gère les erreurs du serveur
+* @param { error } error - Status erreur provenant du serveur http
+*/
 const errorHandler = error => {
   if (error.syscall !== 'listen') {
     throw error;
@@ -35,8 +51,14 @@ const errorHandler = error => {
   }
 };
 
+/** 
+* Création du serveur
+*/
 const server = http.createServer(app);
 
+/** 
+* Association du gestionnaire d'erreur au serveur et construction de l'adresse
+*/
 server.on('error', errorHandler);
 server.on('listening', () => {
   const address = server.address();
@@ -44,4 +66,7 @@ server.on('listening', () => {
   console.log('Listening on ' + bind);
 });
 
+/** 
+* Lancement du serveur
+*/
 server.listen(port);
